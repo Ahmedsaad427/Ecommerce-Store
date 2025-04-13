@@ -15,9 +15,9 @@ namespace Presentation
     {
         // EndPoint to get all products: Public not static method
         [HttpGet] // Get : api/products
-        public async Task<IActionResult> GetAllProducts()
+        public async Task<IActionResult> GetAllProducts(int? brandId,int? typeId)
         {
-            var result = await serviceManager.productService.GetAllProductsAsync();
+            var result = await serviceManager.productService.GetAllProductsAsync(brandId, typeId);
 
             // Check if no products are found
             if (result == null || !result.Any())
