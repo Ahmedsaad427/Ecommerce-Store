@@ -22,6 +22,7 @@ namespace Persistence.Repositories
             if (typeof(TEntity) == typeof(Product))
             {
                 var query = _context.Products
+                    .OrderBy(p => p.Name) // Order by Id
                     .Include(p => p.productBrand)
                     .Include(p => p.productType);
 
