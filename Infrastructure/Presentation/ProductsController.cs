@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
+using Shared;
 
 namespace Presentation
 {
@@ -21,9 +22,9 @@ namespace Presentation
         // 4. Product Price Descending
         // EndPoint to get all products: Public not static method
         [HttpGet] // Get : api/products
-        public async Task<IActionResult> GetAllProducts(int? brandId, int? typeId, string? sort, int pageIndex = 1, int pageSize = 5)
+        public async Task<IActionResult> GetAllProducts([FromQuery]ProductSpecificationsParameter productSpecifications)
         {
-            var result = await serviceManager.productService.GetAllProductsAsync(brandId, typeId, sort, pageIndex, pageSize);
+            var result = await serviceManager.productService.GetAllProductsAsync(productSpecifications);
 
             // Check if no products are found
             if (result == null || !result.Any())
