@@ -8,6 +8,8 @@ namespace Shared
         public int? TypeId { get; set; }
         public string? Sort { get; set; }
 
+        public string? Search { get; set; }
+
         private int _pageIndex = 1;
         public int PageIndex
         {
