@@ -21,9 +21,9 @@ namespace Presentation
         // 4. Product Price Descending
         // EndPoint to get all products: Public not static method
         [HttpGet] // Get : api/products
-        public async Task<IActionResult> GetAllProducts(int? brandId,int? typeId,string? sort)
+        public async Task<IActionResult> GetAllProducts(int? brandId, int? typeId, string? sort, int pageIndex = 1, int pageSize = 5)
         {
-            var result = await serviceManager.productService.GetAllProductsAsync(brandId, typeId, sort);
+            var result = await serviceManager.productService.GetAllProductsAsync(brandId, typeId, sort, pageIndex, pageSize);
 
             // Check if no products are found
             if (result == null || !result.Any())
