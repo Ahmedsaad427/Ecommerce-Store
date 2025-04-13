@@ -16,7 +16,7 @@ namespace Services
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
-        public async Task<IEnumerable<ProductResultDto>> GetAllProductsAsync(ProductSpecificationsParameter productSpecifications)
+        public async Task<PaginationResponse<ProductResultDto>> GetAllProductsAsync(ProductSpecificationsParameter productSpecifications)
         {
 
             var spec = new ProductWithBrandsAndTypesSpeifications(productSpecifications);
@@ -24,10 +24,15 @@ namespace Services
             // Get All Products Through ProductRepository
             var products = await _unitOfWork.GetRepository<Product, int>().GetAllAsync(spec);
 
+            var specCount = new ProductWithCountSpecifications(productSpecifications);
+
+            var count = await _unitOfWork.GetRepository<Product, int>().CountAsync(specCount);
+
+
             // Mapping IEnumerable<Product> to IEnumerable<ProductResultDto> : AutoMapper
 
             var result = mapper.Map<IEnumerable<ProductResultDto>>(products);
-            return result;
+            return new PaginationResponse<ProductResultDto>(productSpecifications.PageIndex, productSpecifications.PageSize, count, result);
 
         }
         public async Task<ProductResultDto?> GetProductByIdAsync(int id)
