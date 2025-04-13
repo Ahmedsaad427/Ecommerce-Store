@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Domain.Models;
+using Shared;
 
 namespace Services.Specifictions
 {
@@ -13,17 +14,17 @@ namespace Services.Specifictions
         {
             ApplyInclude();
         }
-        public ProductWithBrandsAndTypesSpeifications(int? brandId, int? typeId, string? sort, int pageIndex = 1, int pageSize = 5) : base(
+        public ProductWithBrandsAndTypesSpeifications(ProductSpecificationsParameter productSpecifications) : base(
             P =>
-            (!brandId.HasValue || P.BrandId == brandId)
+            (!productSpecifications.BrandId.HasValue || P.BrandId == productSpecifications.BrandId)
             &&
-            (!typeId.HasValue || P.TypeId == typeId)
+            (!productSpecifications.TypeId.HasValue || P.TypeId == productSpecifications.TypeId)
 
             )
         {
             ApplyInclude();
-            ApplySort(sort);
-            ApplyPagination(pageIndex, pageSize);
+            ApplySort(productSpecifications.Sort);
+            ApplyPagination(productSpecifications.PageIndex, productSpecifications.PageSize);
         }
 
 

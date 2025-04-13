@@ -16,10 +16,10 @@ namespace Services
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
-        public async Task<IEnumerable<ProductResultDto>> GetAllProductsAsync(int? brandId, int? typeId, string? sort, int pageIndex = 1, int pageSize = 5)
+        public async Task<IEnumerable<ProductResultDto>> GetAllProductsAsync(ProductSpecificationsParameter productSpecifications)
         {
 
-            var spec = new ProductWithBrandsAndTypesSpeifications(brandId, typeId, sort, pageIndex, pageSize);
+            var spec = new ProductWithBrandsAndTypesSpeifications(productSpecifications);
 
             // Get All Products Through ProductRepository
             var products = await _unitOfWork.GetRepository<Product, int>().GetAllAsync(spec);
