@@ -27,7 +27,7 @@ namespace Presentation
             var result = await serviceManager.productService.GetAllProductsAsync(productSpecifications);
 
             // Check if no products are found
-            if (result == null || !result.Any())
+            if (result == null)
             {
                 return NotFound("No products found"); // 404 Not Found
             }
