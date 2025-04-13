@@ -81,5 +81,20 @@ namespace Persistence.Repositories
                 _context.SaveChanges();  // Save changes to the database
             }
         }
+
+        public async Task<IEnumerable<TEntity>> GetAllAsync(ISpecifications<TEntity, TKey> specifications, bool TrackChanges = false)
+        {
+          return await ApplySpecifications(specifications).ToListAsync();
+        }
+
+        public async Task<TEntity?> GetByIdAsync(ISpecifications<TEntity, TKey> specifications)
+        {
+            return await ApplySpecifications(specifications).FirstOrDefaultAsync();
+        }
+
+        private IQueryable<TEntity> ApplySpecifications( ISpecifications<TEntity, TKey> specifications)
+        {
+            return SpecificationEvaluator.GetQuery(_context.Set<TEntity>(), specifications);
+        }
     }
 }
