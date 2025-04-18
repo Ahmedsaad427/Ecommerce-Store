@@ -32,6 +32,7 @@ public class Program
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
         builder.Services.AddAutoMapper(typeof(AssemblyMapping).Assembly);
         builder.Services.AddScoped<IServiceManager, ServiceManager>();
+        builder.Services.AddInfrastructureServices(builder.Configuration);
 
         // Custom model validation error response
         builder.Services.Configure<ApiBehaviorOptions>(options =>

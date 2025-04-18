@@ -4,11 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Models
+namespace Domain.Exceptions
 {
-    public class BaseEntity<Tkey>
+    public abstract class BadRequestException(string message):Exception(message)
     {
-        public int? Id { get; set;}
-
     }
 }

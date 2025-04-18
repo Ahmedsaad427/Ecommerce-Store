@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Domain.Contracts;
 
-namespace Domain.Models
+namespace Shared
 {
-    public class CustomerBasket 
+    public class BasketDto
     {
         public string Id { get; set; }
-        public IEnumerable<BasketItem> items { get; set; }
+        public IEnumerable<BasketItemDto> Items { get; set; }
 
     }
 }

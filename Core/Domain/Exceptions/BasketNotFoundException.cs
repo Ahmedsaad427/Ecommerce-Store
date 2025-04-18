@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Models
+namespace Domain.Exceptions
 {
-    public class BaseEntity<Tkey>
+    public class BasketNotFoundException(string id):NotFoundException($"Basket with id {id} not found")
     {
-        public int? Id { get; set;}
+
 
     }
 }
