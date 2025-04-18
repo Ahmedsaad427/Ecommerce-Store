@@ -1,5 +1,6 @@
 using System.Reflection.Metadata;
 using Domain.Contracts;
+using Ecommerce_Store.API.Middlewares;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 using Services;
@@ -29,7 +30,7 @@ public class Program
         builder.Services.AddAutoMapper(typeof(AssemblyMapping).Assembly);
         builder.Services.AddScoped<IServiceManager, ServiceManager>();
         var app = builder.Build();
-
+        app.UseMiddleware<GlobalErrorHandlingMiddleware>(); // Register the global error handling middleware
         #region Seeding
         // Create a scope and run database initializer
         using var scope = app.Services.CreateScope();
