@@ -1,7 +1,7 @@
 using System.Reflection.Metadata;
 using Domain.Contracts;
+using Ecommerce_Store.API.Extension;
 using Ecommerce_Store.API.Middlewares;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
@@ -9,6 +9,7 @@ using Services;
 using Services.Abstractions;
 using Shared.ErrorModels;
 using AssemblyMapping = Services.AssemblyReference;
+
 public class Program
 {
     public static async Task Main(string[] args)
@@ -32,10 +33,18 @@ public class Program
         builder.Services.AddAutoMapper(typeof(AssemblyMapping).Assembly);
         builder.Services.AddScoped<IServiceManager, ServiceManager>();
 
-        builder.Services.Configure<ApiBehaviorOptions>(config =>
+        // Custom model validation error response
+        builder.Services.Configure<ApiBehaviorOptions>(options =>
         {
-            config.InvalidModelStateResponseFactory = actionContext =>
+            options.InvalidModelStateResponseFactory = context =>
             {
+                var actionContext = context as ActionContext;
+
+                if (actionContext == null)
+                {
+                    return new BadRequestObjectResult("Invalid context for model validation.");
+                }
+
                 var errors = actionContext.ModelState
                     .Where(m => m.Value.Errors.Any())
                     .Select(m => new ValidationError
@@ -44,7 +53,7 @@ public class Program
                         Errors = m.Value.Errors.Select(e => e.ErrorMessage).ToList()
                     });
 
-                var response = new ValidationErrorReponse()
+                var response = new ValidationErrorResponse
                 {
                     Errors = errors
                 };
@@ -53,27 +62,10 @@ public class Program
             };
         });
 
-
         var app = builder.Build();
-        app.UseMiddleware<GlobalErrorHandlingMiddleware>(); // Register the global error handling middleware
-        #region Seeding
-        // Create a scope and run database initializer
-        using var scope = app.Services.CreateScope();
-        var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
-        await dbInitializer.IntializeAsync(); // Apply migrations and seed data
-        #endregion
 
-        // Configure the HTTP request pipeline
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI();
-        }
-        app.UseStaticFiles();
-        app.UseHttpsRedirection();
-        app.UseAuthorization();
-        app.MapControllers();
+        await app.ConfigureMiddleWareAsync(); // Apply DB seeding, Swagger, ErrorHandling, etc.
 
-        await app.RunAsync(); // Use RunAsync for async Main
+        await app.RunAsync(); // Start the app
     }
 }
