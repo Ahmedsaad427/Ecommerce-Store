@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Domain.Contracts;
+using Domain.Exceptions;
 using Domain.Models;
 using Services.Abstractions;
 using Services.Specifictions;
@@ -46,8 +47,8 @@ namespace Services
             // Check if product is found
             if (product == null)
             {
-                return null;  // Return null if product is not found
-            }
+                throw new ProductNotFoundException(id);
+                    }
             else
             {
                 // Mapping Product to ProductResultDto using AutoMapper
