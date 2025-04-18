@@ -5,6 +5,8 @@ using Persistence;
 using Services;
 using Shared.ErrorModels;
 
+
+
 namespace Ecommerce_Store.API.Extension
 {
     public static class Extension
@@ -55,7 +57,7 @@ namespace Ecommerce_Store.API.Extension
                             Errors = m.Value.Errors.Select(e => e.ErrorMessage).ToList()
                         });
 
-                    var response = new ValidationErrorReponse()
+                    var response = new ValidationErrorResponse()
                     {
                         Errors = errors
                     };
