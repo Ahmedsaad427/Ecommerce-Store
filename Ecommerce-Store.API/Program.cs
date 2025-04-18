@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Persistence;
 using Services;
 using Services.Abstractions;
-
 using AssemblyMapping = Services.AssemblyReference;
 public class Program
 {
@@ -30,7 +29,29 @@ public class Program
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
         builder.Services.AddAutoMapper(typeof(AssemblyMapping).Assembly);
         builder.Services.AddScoped<IServiceManager, ServiceManager>();
-        builder.Services.RegisterAllServices(builder.Configuration); // Register all services
+
+        builder.Services.Configure<ApiBehaviorOptions>(config =>
+        {
+            config.InvalidModelStateResponseFactory = actionContext =>
+            {
+                var errors = actionContext.ModelState
+                    .Where(m => m.Value.Errors.Any())
+                    .Select(m => new ValidationError
+                    {
+                        Field = m.Key,
+                        Errors = m.Value.Errors.Select(e => e.ErrorMessage).ToList()
+                    });
+
+                var response = new ValidationErrorReponse()
+                {
+                    Errors = errors
+                };
+
+                return new BadRequestObjectResult(response);
+            };
+        });
+
+
         var app = builder.Build();
         await app.ConfigureMiddleWareAsync(); // Configure middleware
 

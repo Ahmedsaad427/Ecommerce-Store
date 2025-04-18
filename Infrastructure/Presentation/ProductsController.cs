@@ -4,9 +4,11 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 using Shared;
+using Shared.ErrorModels;
 
 namespace Presentation
 {
@@ -22,9 +24,15 @@ namespace Presentation
         // 4. Product Price Descending
         // EndPoint to get all products: Public not static method
         [HttpGet] // Get : api/products
-        public async Task<IActionResult> GetAllProducts([FromQuery]ProductSpecificationsParameter productSpecifications)
+
+        [ProducesResponseType<PaginationResponse<ProductResultDto>>(StatusCodes.Status200OK,Type=typeof(PaginationResponse<ProductResultDto>))]
+        [ProducesResponseType<PaginationResponse<ProductResultDto>>(StatusCodes.Status500InternalServerError, Type = typeof(ErrorDetails))]
+        [ProducesResponseType<PaginationResponse<ProductResultDto>>(StatusCodes.Status400BadRequest, Type = typeof(ErrorDetails))]
+
+        public async Task<ActionResult<PaginationResponse<ProductResultDto>>> GetAllProducts([FromQuery]ProductSpecificationsParameter productSpecifications)
         {
             var result = await serviceManager.productService.GetAllProductsAsync(productSpecifications);
+
 
             // Check if no products are found
             if (result == null)
@@ -40,7 +48,12 @@ namespace Presentation
         // EndPoint to get a product by ID: Public not static method
 
         [HttpGet("{id}")] // Get : api/products/{id}
-        public async Task<IActionResult> GetProductById(int id)
+        [ProducesResponseType<PaginationResponse<ProductResultDto>>(StatusCodes.Status200OK, Type = typeof(ProductResultDto))]
+        [ProducesResponseType<PaginationResponse<ProductResultDto>>(StatusCodes.Status500InternalServerError, Type = typeof(ErrorDetails))]
+        [ProducesResponseType<PaginationResponse<ProductResultDto>>(StatusCodes.Status400BadRequest, Type = typeof(ErrorDetails))]
+        [ProducesResponseType<PaginationResponse<ProductResultDto>>(StatusCodes.Status404NotFound, Type = typeof(ErrorDetails))]
+
+        public async Task<ActionResult<ProductResultDto>> GetProductById(int id)
         {
             var result = await serviceManager.productService.GetProductByIdAsync(id);
             // Check if product is found
@@ -57,7 +70,11 @@ namespace Presentation
         // EndPoint to Get Brands: Public not static method
 
         [HttpGet("brands")] // Get : api/products/brands
-        public async Task<IActionResult> GetBrands()
+        [ProducesResponseType<PaginationResponse<ProductResultDto>>(StatusCodes.Status200OK, Type = typeof(IEnumerable<BrandResultDto>))]
+        [ProducesResponseType<PaginationResponse<ProductResultDto>>(StatusCodes.Status500InternalServerError, Type = typeof(ErrorDetails))]
+        [ProducesResponseType<PaginationResponse<ProductResultDto>>(StatusCodes.Status400BadRequest, Type = typeof(ErrorDetails))]
+
+        public async Task<ActionResult<BrandResultDto>> GetBrands()
         {
             var result = await serviceManager.productService.GetAllBrandsAsync();
             // Check if no brands are found
@@ -75,7 +92,10 @@ namespace Presentation
         // EndPoint to Get Types: Public not static method
 
         [HttpGet("types")] // Get : api/products/types
-        public async Task<IActionResult> GetTypes()
+        [ProducesResponseType<PaginationResponse<ProductResultDto>>(StatusCodes.Status200OK, Type = typeof(IEnumerable<TypeResultDto>))]
+        [ProducesResponseType<PaginationResponse<ProductResultDto>>(StatusCodes.Status500InternalServerError, Type = typeof(ErrorDetails))]
+        [ProducesResponseType<PaginationResponse<ProductResultDto>>(StatusCodes.Status400BadRequest, Type = typeof(ErrorDetails))]
+        public async Task<ActionResult<TypeResultDto>> GetTypes()
         {
             var result = await serviceManager.productService.GetAllTypesAsync();
             // Check if no types are found
