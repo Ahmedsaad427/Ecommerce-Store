@@ -1,4 +1,5 @@
-﻿using Shared.ErrorModels;
+﻿using Domain.Exceptions;
+using Shared.ErrorModels;
 
 namespace Ecommerce_Store.API.Middlewares
 {
@@ -18,18 +19,37 @@ namespace Ecommerce_Store.API.Middlewares
             try
             {
                 await _next.Invoke(context);
+
+                if (context.Response.StatusCode == StatusCodes.Status404NotFound)
+                {
+                    context.Response.ContentType = "application/json";
+                    var response = new ErrorDetails
+                    {
+                        statusCode = StatusCodes.Status404NotFound,
+                        ErrorMessage = $"EndPoint {context.Request.Path} is not found"
+                    };
+                    await context.Response.WriteAsJsonAsync(response);
+                }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An unhandled exception occurred.");
 
-                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                //context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 context.Response.ContentType = "application/json";
 
                 var response = new ErrorDetails
                 {
-                    statusCode = context.Response.StatusCode,
-                    ErrorMessage = "An unexpected error occurred. Please try again later."
+                    //statusCode = context.Response.StatusCode,
+                    ErrorMessage = ex.Message
+                };
+
+                // Check if the exception is a known type and set the status code accordingly
+                response.statusCode = ex switch
+                {
+                    // Add more specific exceptions here if needed
+                    NotFoundException => StatusCodes.Status404NotFound,
+                    _ => StatusCodes.Status500InternalServerError
                 };
 
                 await context.Response.WriteAsJsonAsync(response);
